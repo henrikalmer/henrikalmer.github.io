@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v0.26.0/mapbox-gl.css' rel='stylesheet' />
+    <script src='https://api.mapbox.com/mapbox-gl-js/v0.26.0/mapbox-gl.js'></script>
+  </head>
+
+  <body>
+    <div id='map' style='width: 800px; height: 600px;'></div>
+    <script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoiaGVucmlrYWxtZXIiLCJhIjoiY2l1bnh1dDBiMDAxODJ6bDhic3pwYWs4ZCJ9.G1n-UDNUax12ps_jlfR_Og';
+    
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/henrikalmer/ciur00oca00sn2iqqewuzl6l9',
+        center: [18.0686, 59.3293],
+        zoom: 12,
+        pitch: 45,
+        bearing: -17.6,
+    });
+
+    var sqmprice_height_stops = [
+      [0.0, 0],
+      [5000.0, 500],
+      [10000.0, 1000],
+      [15000.0, 1500],
+      [20000.0, 2000],
+      [25000.0, 2500],
+      [30000.0, 3000],
+      [35000.0, 3500],
+      [40000.0, 4000],
+      [45000.0, 4500],
+      [50000.0, 5000],
+      [55000.0, 5500],
+      [60000.0, 6000],
+      [65000.0, 6500],
+      [70000.0, 7000],
+      [75000.0, 7500],
+      [80000.0, 8000],
+      [85000.0, 8500],
+      [90000.0, 9000],
+      [95000.0, 9500],
+      [100000.0, 10000],
+      [105000.0, 10500],
+      [110000.0, 11000],
+      [115000.0, 11500],
+      [120000.0, 12000],
+    ];
+    var sqmprice_color_stops = [
+      [20000.0, "#fff"],
+      [120000.0, "#f00"],
+    ];
+
+    map.on('load', function () {
+      map.addLayer({
+        'id': 'polygon-data',
+        'type': 'fill',
+        'source': 'composite',
+        'source-layer': 'sthlm-sqmprice-polygons',
+        'paint': {
+          'fill-color': {
+            'property': 'sqmprice',
+            'stops': sqmprice_color_stops
+          },
+          'fill-extrude-height': {
+            'type': 'interval',
+            'property': 'sqmprice',
+            'stops': sqmprice_height_stops
+          },
+          'fill-extrude-base': 0,
+          'fill-opacity': .6
+        }
+      });
+
+      map.addLayer({
+        'id': 'topo-data',
+        'type': 'line',
+        'source': 'composite',
+        'source-layer': 'sthlm-sqmprice-topo',
+        'paint': {
+          'line-color': '#ccc',
+        }
+      });
+    });
+    </script>
+  </body>
+</html>
