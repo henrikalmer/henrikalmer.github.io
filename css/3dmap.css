@@ -1,0 +1,11 @@
+.mapboxgl-popup {
+  max-width: 400px;
+}
+
+.map-overlay {
+  position: absolute;
+  width: 360px;
+  top: 0;
+  left: 0;
+  padding: 10px;
+}
