@@ -220,7 +220,8 @@ map.on('load', function () {
     var unit = 'kvadratmeterpris';
     if (state['selection'] == 'combined') unit = 'pris';
     var pricestring = "Genomsnittligt " + unit + ": " + feature.properties.sqmprice.toLocaleString('sv-SE', {style:'currency', currency: 'SEK', maximumFractionDigits: 0})
-    document.getElementById('info').innerHTML = pricestring;
+    var links = arealinks[feature.properties.id]
+    document.getElementById('info').innerHTML = "<p>" + pricestring + "<br>Se bostäder till salu i:<br>" + links + "</p>";
   });
 
   // Add zoom and rotation controls to the map.
