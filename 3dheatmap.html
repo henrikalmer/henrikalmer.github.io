@@ -3,27 +3,49 @@
   <head>
     <link href='css/bootstrap.min.css' rel='stylesheet' />
     <link href='css/mapbox-gl.css' rel='stylesheet' />
-    <link href='css/3dmap.css' rel='stylesheet' />
+    <link href='css/titatoggle-dist-min.css' rel='stylesheet' />
+    <link href='css/map.css' rel='stylesheet' />
 
     <script src='js/mapbox-gl.js'></script>
     <script src='js/lodash.min.js'></script>
   </head>
 
   <body>
-    <div id="map" style="width: 1000px; height: 800px;"></div>
-    <div class="map-overlay top">
-      <div class="btn-toolbar" role="toolbar">
-        <div id="buttons" class="btn-group" role="group" aria-label="Bostadstyp">
-          <a href="#combined" class="btn btn-default ot-toggle" role="button">Alla bostäder</a>
-          <a href="#apt" class="btn btn-default ot-toggle" role="button">Lägenheter</a>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+          <div class="splash">
+            <div class="center">
+              <h1 class="header">Slutpriskarta</h1>
+              <p>Slutpriskartan nedan visar slutpriser för antingen bara lägenheter eller alla bostäder i Stockholms län. Den kan användas i 2D eller 3D. För att navigera i 3D håller du inne CTRL samtidigt som du håller nere musknappen.</p>
+            </div>
+
+            <div class="menu center toolbar" role="toolbar">
+              <a href="#combined" class="menu-btn ot-toggle" role="button">Alla bostadstyper</a>
+              <a href="#apt" class="active menu-btn ot-toggle" role="button">Lägenheter</a>
+              <div class="checkbox checkbox-slider--c">
+                <label>
+                  <input id="toggle-3d" type="checkbox" checked="checked"><span>3D</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
         </div>
-        <div id="buttons" class="btn-group" role="group" aria-label="Perspektiv">
-          <a href="#extruded" id="persp-toggle" class="btn btn-default" role="button">3D</a>
+        <div class="col-md-2"></div>
+      </div>
+
+      <div class="row">
+        <div class="map-wrap">
+          <div id="map" style="width: 100%; height: 600px;"></div>
+          <div id="info" class="map-overlay center" style="visibility: hidden;">
+            <p id="info-price"></p>
+            <div id="goto-listings"></div>
+          </div>
         </div>
       </div>
     </div>
-
-    <div id="info"></div>
 
     <script src='js/arealinks.js'></script>
     <script src='js/map.js'></script>

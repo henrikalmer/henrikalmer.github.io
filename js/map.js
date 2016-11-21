@@ -1,7 +1,7 @@
 // State
 var state = {
-  'perspective': 'flat',
-  'selection': 'combined',
+  'perspective': 'extruded',
+  'selection': 'apt',
 };
 
 // Define height and color stops
@@ -140,7 +140,7 @@ var togglableLayers = {
 
 
 // Init map
-var extruded_pitch = 35;
+var extruded_pitch = 55;
 var flat_pitch = 0;
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiaGVucmlrYWxtZXIiLCJhIjoiY2l1bnh1dDBiMDAxODJ6bDhic3pwYWs4ZCJ9.G1n-UDNUax12ps_jlfR_Og';
@@ -150,7 +150,7 @@ var map = new mapboxgl.Map({
   center: [18.0686, 59.3293],
   zoom: 10,
   minZoom: 9,
-  pitch: flat_pitch,
+  pitch: extruded_pitch,
 });
 
 // Set up map on load
@@ -167,8 +167,14 @@ map.on('load', function () {
   map.addLayer(layers['combined-extruded']);
   map.addLayer(layers['combined-extruded-clicked']);
 
-  // Set visibility
+  
   var updateMap = function(state) {
+    // Clear selection
+    var highlight_layer_id = togglableLayers[state['perspective']][state['selection']][1];
+    map.setFilter(highlight_layer_id, ['==', 'id', '']);
+    document.getElementById('info').style.visibility = 'hidden';
+
+    // Set map layer visibility
     visible_layers = togglableLayers[state['perspective']][state['selection']]
     for (key in layers) {
       map.setLayoutProperty(layers[key]['id'], 'visibility', 'none');
@@ -189,17 +195,18 @@ map.on('load', function () {
   for (var i = 0; i < links.length; i++) {
     links[i].addEventListener('click', function(e) {
       state['selection'] = e.target.getAttribute('href').split('#')[1];
+      for (var i = 0; i < links.length; i++) {
+        links[i].classList.remove('active');
+      }
+      e.target.classList.add('active');
       updateMap(state);
     }, false);
   }
-  document.getElementById('persp-toggle').addEventListener('click', function(e) {
-    state['perspective'] = e.target.getAttribute('href').split('#')[1];
-    if (state['perspective'] === 'extruded') {
-      e.target.href = '#flat';
-      e.target.innerHTML = '2D';
+  document.getElementById('toggle-3d').addEventListener('change', function(e) {
+    if (e.target.checked) {
+      state['perspective'] = 'extruded';
     } else {
-      e.target.href = '#extruded';
-      e.target.innerHTML = '3D';
+      state['perspective'] = 'flat';
     }
     updateMap(state);
   }, false);
@@ -209,19 +216,26 @@ map.on('load', function () {
     var active_layer_id = togglableLayers[state['perspective']][state['selection']][0];
     var highlight_layer_id = togglableLayers[state['perspective']][state['selection']][1];
     var features = map.queryRenderedFeatures(e.point, { layers: [active_layer_id] });
-    var feature;
+    var feature, feature_id;
     if (features.length) {
       feature = features[0];
-      map.setFilter(highlight_layer_id, ['==', 'id', feature.properties.id]);
+      feature_id = feature.properties.id
     } else {
-      map.setFilter(highlight_layer_id, ['==', 'id', '']);
+      feature_id = ''
     }
+    map.setFilter(highlight_layer_id, ['==', 'id', feature_id]);
     
-    var unit = 'kvadratmeterpris';
-    if (state['selection'] == 'combined') unit = 'pris';
-    var pricestring = "Genomsnittligt " + unit + ": " + feature.properties.sqmprice.toLocaleString('sv-SE', {style:'currency', currency: 'SEK', maximumFractionDigits: 0})
-    var links = arealinks[feature.properties.id]
-    document.getElementById('info').innerHTML = "<p>" + pricestring + "<br>Se bostäder till salu i:<br>" + links + "</p>";
+    document.getElementById('info').style.visibility = 'visible';
+    var unit = 'slutpris per kvadratmeter';
+    if (state['selection'] == 'combined') unit = 'slutpris';
+    var pricestring = "Genomsnittligt " + unit + ": <strong>" + parseInt(feature.properties.sqmprice).toLocaleString('sv-SE', {style:'currency', currency: 'SEK'} + "</strong>")
+    var div = document.createElement('div');
+    div.innerHTML = arealinks[feature.properties.id];
+    var areaurl = div.firstChild.getAttribute("href");
+    var areaname = div.firstChild.innerHTML;
+    var button = "<a href=\"" + areaurl + "\" class=\"btn btn-default\" target=\"_blank\">Se alla bostäder till salu i " + areaname + "</a>"
+    document.getElementById('info-price').innerHTML = "<p>" + pricestring + "</p>";
+    document.getElementById('goto-listings').innerHTML = button;
   });
 
   // Add zoom and rotation controls to the map.
